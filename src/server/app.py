@@ -4,6 +4,7 @@ import numpy as np
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
+app.run(host='0.0.0.0') 
 
 @app.route('/demo', methods=['POST'])
 def demo():
