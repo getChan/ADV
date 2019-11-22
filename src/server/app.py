@@ -2,9 +2,7 @@ from model import MTModel
 from preprocessing import chinese_to_id, id_to_korean, padding_input
 import numpy as np
 from flask import Flask, jsonify, request
-
 app = Flask(__name__)
-app.run(host='0.0.0.0') 
 
 @app.route('/demo', methods=['POST'])
 def demo():
@@ -42,3 +40,5 @@ def decode_sequence(input_seq):
         states_value = [h, c]
 
     return decoded_sentence
+
+app.run(host='0.0.0.0') 
