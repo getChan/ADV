@@ -6,6 +6,8 @@ import time
 import json
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from functions import *
+import logging
+logging.basicConfig(filename='./train.log', level=logging.DEBUG)
 warnings.filterwarnings(action='ignore')
 df = pd.read_hdf('../data/tokenized_10thousand.hdf')
 
@@ -105,6 +107,7 @@ ckpt_manager = tf.train.CheckpointManager(ckpt, checkpoint_path, max_to_keep=5)
 if ckpt_manager.latest_checkpoint:
     ckpt.restore(ckpt_manager.latest_checkpoint)
     print ('Latest checkpoint restored!!')
+    logging.info('Latest checkpoint restored!!')
 
 EPOCHS = 20
 
@@ -121,14 +124,21 @@ for epoch in range(EPOCHS):
         if batch % 50 == 0:
             print ('Epoch {} Batch {} Loss {:.4f} Accuracy {:.4f}'.format(
               epoch + 1, batch, train_loss.result(), train_accuracy.result()))
-
+            logging.info('Epoch {} Batch {} Loss {:.4f} Accuracy {:.4f}'.format(
+              epoch + 1, batch, train_loss.result(), train_accuracy.result()))
     if (epoch + 1) % 5 == 0:
         ckpt_save_path = ckpt_manager.save()
         print ('Saving checkpoint for epoch {} at {}'.format(epoch+1,
+                                                             ckpt_save_path))
+        logging.info('Saving checkpoint for epoch {} at {}'.format(epoch+1,
                                                              ckpt_save_path))
 
     print ('Epoch {} Loss {:.4f} Accuracy {:.4f}'.format(epoch + 1, 
                                                 train_loss.result(), 
                                                 train_accuracy.result()))
+    logging.info('Epoch {} Loss {:.4f} Accuracy {:.4f}'.format(epoch + 1, 
+                                                train_loss.result(), 
+                                                train_accuracy.result()))
 
     print ('Time taken for 1 epoch: {} secs\n'.format(time.time() - start))
+    logging.info('Time taken for 1 epoch: {} secs\n'.format(time.time() - start))
