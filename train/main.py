@@ -7,9 +7,9 @@ import json
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from functions import *
 import logging
-logging.basicConfig(filename='./train.log', level=logging.DEBUG)
+logging.basicConfig(filename='/train.log', level=logging.DEBUG)
 warnings.filterwarnings(action='ignore')
-df = pd.read_hdf('../data/tokenized_10thousand.hdf')
+df = pd.read_hdf('../data/tokenized_10thousand.hdf', stop=5)
 
 # json으로 저장한 단어 사전 불러오기
 with open('../notebook/id_dict/input_id.json', 'r') as fp:
@@ -50,17 +50,9 @@ dropout_rate = 0.1
 learning_rate = CustomSchedule(d_model)
 optimizer = tf.keras.optimizers.Adam(learning_rate, beta_1=0.9, beta_2=0.98, epsilon=1e-9)
 
-train_loss = tf.keras.metrics.Mean(name='train_loss')
-train_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(
-    name='train_accuracy')
-
-train_step_signature = [
-    tf.TensorSpec(shape=(None, None), dtype=tf.int64),
-    tf.TensorSpec(shape=(None, None), dtype=tf.int64),
-]
+loss_object = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True, reduction='none')
 
 def loss_function(real, pred):
-    loss_object = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True, reduction='none')
     mask = tf.math.logical_not(tf.math.equal(real, 0))
     loss_ = loss_object(real, pred)
 
@@ -68,6 +60,16 @@ def loss_function(real, pred):
     loss_ *= mask
 
     return tf.reduce_mean(loss_)
+
+train_loss = tf.keras.metrics.Mean(name='train_loss')
+train_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(
+    name='train_accuracy')
+
+
+train_step_signature = [
+    tf.TensorSpec(shape=(None, None), dtype=tf.int64),
+    tf.TensorSpec(shape=(None, None), dtype=tf.int64),
+]
 
 @tf.function(input_signature=train_step_signature)
 def train_step(inp, tar):
