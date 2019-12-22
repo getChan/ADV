@@ -20,7 +20,7 @@ warnings.filterwarnings(action='ignore')
 # In[3]:
 
 
-df = pd.read_hdf('/home/work/nlp/tokenized_10thousand.hdf',stop=10)
+df = pd.read_hdf('/home/work/nlp/tokenized_10thousand.hdf')
 
 
 # In[4]:
@@ -83,7 +83,7 @@ def encode_translation(translation):
 
 origin, trans = df.original.apply(encode_original), df.translation.apply(encode_translation)
 
-
+del df
 # # Padding
 # 최대 문장의 길이(== 모델 인풋)를 `200`으로 설정해서 문장 길이가 `200`이 되지 않으면 padding 한다
 # 
@@ -103,7 +103,7 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 encoder_input_data = tf.convert_to_tensor(pad_sequences(origin, maxlen=200, padding='post', truncating='post'),dtype=tf.int64)
 decoder_target_data = tf.convert_to_tensor(pad_sequences(trans, maxlen=200, padding='post', truncating='post'),dtype=tf.int64)
-
+del origin, trans
 
 # In[273]:
 
@@ -115,7 +115,7 @@ train_dataset = tf.data.Dataset.from_tensor_slices((encoder_input_data, decoder_
 
 
 BUFFER_SIZE = 20000
-BATCH_SIZE = 64
+BATCH_SIZE = 32
 
 
 # In[275]:
@@ -125,7 +125,7 @@ train_dataset = train_dataset.cache()
 train_dataset = train_dataset.shuffle(BUFFER_SIZE).batch(BATCH_SIZE)
 train_dataset = train_dataset.prefetch(tf.data.experimental.AUTOTUNE)
 
-
+del encoder_input_data, decoder_target_data
 # # Positional Encoding
 # 토큰의 위치정보를 담는 positional encoding
 
@@ -665,7 +665,6 @@ def train_step(inp, tar):
 
 # In[277]:
 
-
 for epoch in range(EPOCHS):
     start = time.time()
 
@@ -680,9 +679,8 @@ for epoch in range(EPOCHS):
             print ('Epoch {} Batch {} Loss {:.4f} Accuracy {:.4f}'.format(
               epoch + 1, batch, train_loss.result(), train_accuracy.result()))
 
-    if (epoch + 1) % 5 == 0:
-        ckpt_save_path = ckpt_manager.save()
-        print ('Saving checkpoint for epoch {} at {}'.format(epoch+1,
+    ckpt_save_path = ckpt_manager.save()
+    print ('Saving checkpoint for epoch {} at {}'.format(epoch+1,
                                                              ckpt_save_path))
 
     print ('Epoch {} Loss {:.4f} Accuracy {:.4f}'.format(epoch + 1, 
