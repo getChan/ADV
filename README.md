@@ -20,6 +20,6 @@ BOAZ:elephant: ADV 프로젝트 **한자 문헌 번역기**입니다.
 
 ## 개발 과정
 
-간략하게나마 블로그에 개발 과정을 기록했습니다. 
+간략하게나마 [블로그](https://getchan.github.io/projects/adv_pjt_2/)에 개발 과정을 기록했습니다. 
 
-질문이나 피드백 매우 감사합니다. [:e-mail:](9511chn@gmail.com)
+질문이나 피드백 매우 감사합니다. [:e-mail:](mailto:9511chn@gmail.com)
