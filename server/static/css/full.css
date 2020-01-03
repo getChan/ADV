@@ -1,0 +1,33 @@
+nav{
+    background-color:transparent;
+}
+.board {
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.5)), url(/static/images/cyber.jpg);
+    min-height: 100%;
+    min-width: 512px;
+
+    width: 100%;
+    height: auto;
+    position: fixed;
+    background-size: cover;
+}
+
+@media screen and(max-width: 1024px){
+    .board{
+        left: 50%;
+        margin-left: -512px;
+    }
+}
+.board-content{
+    color: white;
+}
+.footer{
+    bottom:0;
+    position:absolute;
+    padding-bottom: 1rem;
+    padding-right: 1rem;
+}
+hr{
+    color: white;
+    background-color: white;
+}

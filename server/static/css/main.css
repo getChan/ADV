@@ -1,0 +1,26 @@
+.empty-row {
+    height:50px;
+}
+.title{
+    font-size: 5rem;
+    font-weight: bold;
+}
+.semi-title{
+    font-size: 2rem;
+    font-weight: bold;
+}
+.accent {
+    font-weight: bold;
+}
+.logo{
+    max-width: 2rem;
+    max-height: 2rem;
+}
+#search{
+    height:2.5rem;
+    width:2.5rem;
+    border-radius: 50%;
+}
+.warning{
+    color:red;
+}

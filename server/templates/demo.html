@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <title>응답하라 1392</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="{{url_for('static', filename='bootstrap/bootstrap.css')}}" >
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+    <!-- Bootstrap CSS -->
+    <script src="{{url_for('static', filename='js/jquery-3.4.1.min.js')}}"></script>
+    <script src="https://kit.fontawesome.com/128a736b7f.js"></script>
+
+  </head>
+  <body>
+    <div class="container-fluid">
+    <div class="empty-row"></div>
+    <div class="empty-row"></div>
+    <div class="empty-row"></div>
+    <div class="empty-row"></div>
+    <div class="empty-row"></div>
+    <div class="empty-row"></div>
+
+    <form action="{{url_for('demo')}}" method='post'>
+        <div class="form-group form-row searchbox">
+            <div class='col-md-3'></div>
+            <div class='col-md-6'>
+                <input id="query" class="form-control search_input" name="query" type="text" placeholder="한자를 입력하세요 (ex. ○ 上移次慶運宮)">
+            </div>
+            <div class='col-md-1'>
+                <button type="submit" id="search" class="form-control btn-sm btn btn-primary btn-block"><i class="fas fa-search"></i></button>
+            </div>
+            <div class='col-md-2'></div>
+        </div>
+    </form>
+
+
+    {% if query %}
+      <div class="row text-center">
+        <div class="offset-md-2 col-md-8">
+            <p>{{ query }}</p>
+            <p class="text-success">{{ result }}</span></p>
+        </div>
+      </div>
+    {% endif %}
+
+
+<script>
+var query = $('input[name=query]');
+var alert = $('<div class="alert alert-danger"/>');
+$('form').submit(function(e){
+    e.preventDefault();
+    var queryTag = $('#query');
+    var query = queryTag.val();
+    if(!query){
+        queryTag.after(alert.text('문장을 입력하세요'));
+    }
+    else{
+        this.submit();
+    }
+});
+</script>
+</div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="{{ url_for('static', filename='bootstrap/bootstrap.min.js') }}"></script>
+  </body>
+
+</html>
