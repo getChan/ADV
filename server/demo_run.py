@@ -2,28 +2,33 @@ import tensorflow as tf
 # import matplotlib.pyplot as plt
 import sentencepiece as spm
 from transformer import CustomSchedule, Transformer, create_masks
-
+from time import time
 print(tf.__version__)
 print(tf.test.is_gpu_available())
 
 sp = spm.SentencePieceProcessor()
 sp.Load('hanmun_encode.model') 
 
+OLD_VOCAB_SIZE = 26000
+KOR_VOCAB_SIZE = 52000
 # korean dictionary
 with open('josun.vocab', encoding='utf-8') as f:
     vo = [doc.strip().split("\t") for doc in f]
     # w[0]: token name    
     # w[1]: token score
     dict_to_korean = {i:w[0] for i, w in enumerate(vo)}
-    dict_to_korean[50000] = '<START>'
-    dict_to_korean[50000+1] = '<END>'
+    dict_to_korean[KOR_VOCAB_SIZE] = '<START>'
+    dict_to_korean[KOR_VOCAB_SIZE+1] = '<END>'
 
 with open('hanmun.vocab', encoding='utf-8') as f:
     vo = [doc.strip().split("\t") for doc in f]
     dict_to_code = {w[0]:i for i, w in enumerate(vo)}
 
 def query_encode(query):
-    return [dict_to_code[ch] for ch in sp.EncodeAsPieces(query)]
+    # start = time()
+    tmp =  [dict_to_code[ch] for ch in sp.EncodeAsPieces(query)]
+    # print("subword tokenize time", time()-start)
+    return tmp
 
 
 def load_model(path='./model'):
@@ -32,8 +37,8 @@ def load_model(path='./model'):
     dff = 512
     num_heads = 8
 
-    added_input_size = 25000 + 2
-    added_target_size = 50000 + 2
+    added_input_size = OLD_VOCAB_SIZE + 2
+    added_target_size = KOR_VOCAB_SIZE + 2
     dropout_rate = 0.1
 
     learning_rate = CustomSchedule(d_model)
@@ -62,13 +67,16 @@ def load_model(path='./model'):
 model = load_model()
 
 def evaluate(inp_sentence, transformer=model):
-    start_token = 25000
-    end_token = 25000+1
+
+    # start = time()
+
+    start_token = OLD_VOCAB_SIZE
+    end_token = OLD_VOCAB_SIZE+1
     
     inp_sentence = [start_token] + inp_sentence + [end_token]
     encoder_input = tf.expand_dims(inp_sentence, 0)
 
-    decoder_input = [50000]
+    decoder_input = [KOR_VOCAB_SIZE]
     output = tf.expand_dims(decoder_input, 0)
     
     for i in range(200):
@@ -87,17 +95,19 @@ def evaluate(inp_sentence, transformer=model):
 
         predicted_id = tf.cast(tf.argmax(predictions, axis=-1), tf.int32)
 
-        if predicted_id == 50000+1:
+        if predicted_id == KOR_VOCAB_SIZE+1:
+            # print("model predict time :", time()-start)
             return tf.squeeze(output, axis=0), attention_weights
 
         output = tf.concat([output, predicted_id], axis=-1)
 
+    # print("model predict time :", time()-start)
     return tf.squeeze(output, axis=0), attention_weights
 
 
 def translate(sentence, plot=''):
     result, attention_weights = evaluate(query_encode(sentence), model)
-    predicted_sentence = [dict_to_korean[x.numpy()] for x in result]
+    predicted_sentence = [dict_to_korean[x.numpy()] for x in result[1:]]
 
     # if plot:
     #     plot_attention_weights(attention_weights, sentence, result, plot)
