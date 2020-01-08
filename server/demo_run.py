@@ -3,8 +3,8 @@ import tensorflow as tf
 import sentencepiece as spm
 from transformer import CustomSchedule, Transformer, create_masks
 from time import time
-print(tf.__version__)
-print(tf.test.is_gpu_available())
+print('tf Version :', tf.__version__)
+print('GPU Available :', tf.test.is_gpu_available())
 
 sp = spm.SentencePieceProcessor()
 sp.Load('hanmun_encode.model') 
